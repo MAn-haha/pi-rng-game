@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pi RNG Game</title>
+</head>
+<body>
+  <h1>Target: 3.14159265</h1>
+
+  <h2 id="display">0.00000000</h2>
+
+  <button id="holdBtn">Hold to Randomize</button>
+  <button onclick="rollOnce()">Normal Roll</button>
+  <button onclick="reset()">Reset</button>
+
+  <p id="status"></p>
+  <p id="best">Closest roll so far: -</p>
+
+  <script>
+    const target = 3.14159265;
+
+    let current = 0;
+    let bestRoll = null;
+    let bestDiff = Infinity;
+
+    let rollInterval = null;
+
+    function roll() {
+      let num = +(Math.random() * 10).toFixed(8);
+      current = num;
+
+      document.getElementById("display").innerText = current.toFixed(8);
+
+      let diff = Math.abs(current - target);
+
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestRoll = current;
+      }
+
+      document.getElementById("best").innerText =
+        "Closest roll so far: " + bestRoll.toFixed(8) +
+        " (off by " + bestDiff.toFixed(8) + ")";
+    }
+
+    // NORMAL SINGLE ROLL
+    function rollOnce() {
+      roll();
+    }
+
+    // HOLD TO ROLL BUTTON
+    const holdBtn = document.getElementById("holdBtn");
+
+    holdBtn.addEventListener("mousedown", startRolling);
+    holdBtn.addEventListener("touchstart", startRolling);
+
+    holdBtn.addEventListener("mouseup", stopRolling);
+    holdBtn.addEventListener("mouseleave", stopRolling);
+    holdBtn.addEventListener("touchend", stopRolling);
+
+    function startRolling() {
+      if (rollInterval) return;
+      rollInterval = setInterval(roll, 50);
+    }
+
+    function stopRolling() {
+      clearInterval(rollInterval);
+      rollInterval = null;
+    }
+
+    function reset() {
+      stopRolling();
+
+      current = 0;
+      bestRoll = null;
+      bestDiff = Infinity;
+
+      document.getElementById("display").innerText = "0.00000000";
+      document.getElementById("best").innerText = "Closest roll so far: -";
+      document.getElementById("status").innerText = "";
+    }
+  </script>
+</body>
+</html>
